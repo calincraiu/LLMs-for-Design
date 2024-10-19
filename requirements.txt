@@ -1,3 +1,7 @@
+ipykernel
+ipywidgets
+python-dotenv
 numpy
 pillow
+tqdm
 google-generativeai
