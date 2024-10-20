@@ -1,0 +1,24 @@
+{
+    "fields": {
+        "cladding_system": {
+            "type": "str",
+            "optional": true,
+            "description": "The cladding system of the building."
+        },
+        "glazing_system": {
+            "type": "str",
+            "optional": true,
+            "description": "The glazing system of the building."
+        },
+        "predominant_material": {
+            "type": "str",
+            "optional": true,
+            "description": "The predominant cladding material in the facade."
+        },
+        "glazing_percentage": {
+            "type": "int",
+            "optional": true,
+            "description": "The percentage of the facade that should be comprised of glazing."
+        }
+    }
+}
