@@ -5,3 +5,9 @@ numpy
 pillow
 tqdm
 google-generativeai
+langchain-google-genai
+langchain
+langchain-community
+chromadb
+pypdf
+pandas
