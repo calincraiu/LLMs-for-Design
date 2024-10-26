@@ -5,11 +5,9 @@ from fastapi import FastAPI, Response
 from apputil import *
 
 # Constants
-GOOGLE_API_KEY = None
-"""The Google API key used to make calls to Gemini."""
-MODEL_OUTPUT_SCHEMA_FILE = "../resources/structured_output_schema_examples/facade_specification_output_schema.json"
+MODEL_OUTPUT_SCHEMA_FILE = "../resources/model_output_schema/facade_specification_output_schema.json"
 """The json file that describes the structure of the model output - this will be parsed to create a dynamic pydantic BaseModel."""
-DOCUMENT_DIRECTORY = "../resources/document_examples"
+DOCUMENT_DIRECTORY = "../resources/documents"
 """The directory containing all the documents to be used for RAG. Note that only PDFs are supported."""
 CHUNK_SIZE = 6000
 """The size in number of characters for each chunk - this represents a segment of the data loaded from the PDF documents."""
@@ -39,15 +37,11 @@ async def lifespan(app: FastAPI):
     genai.configure(api_key=GOOGLE_API_KEY)
     print("Loaded the Google API key.")
 
-    # Load the json schema from file
-    if not os.path.isfile(MODEL_OUTPUT_SCHEMA_FILE):
-            raise Exception("The specified model output spec filepath is not a valid path. Check if the file exists.")
-    else:
-        with open(MODEL_OUTPUT_SCHEMA_FILE) as f:
-            try:
-                model_output_json_schema = json.load(f)
-            except:
-                raise Exception("The provided model output schema loaded from the given file is not valid JSON.")
+    with open(MODEL_OUTPUT_SCHEMA_FILE) as f:
+        try:
+            model_output_json_schema = json.load(f)
+        except:
+            raise Exception("Could not load json from the specified file.")
 
     # Load all documents from the given directory and chunk them
     text_chunks = get_document_chunks(DOCUMENT_DIRECTORY, CHUNK_SIZE, CHUNK_OVERLAP)
@@ -103,7 +97,7 @@ def generate(query: str):
     input = runtime["prompt_template"].format_prompt(question=query)
     # Invoke the LLM chain with a string representation of the input prompt
     output = runtime["llm_qa_chain"].invoke(input.to_string())
-    # parse the output into the predefined Pydantic class
+    # Parse the output into the predefined pydantic class
     parsed_output: BaseModel = runtime["parser"].parse(output["result"])
     # Return the structured model response as json
     return Response(content=parsed_output.model_dump_json(), media_type="application/json")
